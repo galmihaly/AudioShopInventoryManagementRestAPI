@@ -12,5 +12,7 @@ namespace DemoRestAPI.Storages.Repository
         Task<bool> DecrementQuantity(string? storageId);
         Task<List<Storage>> GetStoragesByWarehouseId(int? warehouseId);
         Task<Storage> SearchByStorageId(string? storageId);
+        Task<bool> IncrementStorageValues(string? storageId, int? basePrice, int? wholeSalePrice);
+        Task<bool> DecrementStorageValues(string? storageId, int basePrice, int wholeSalePrice);
     }
 }

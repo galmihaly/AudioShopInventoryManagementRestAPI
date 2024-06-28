@@ -8,7 +8,7 @@ namespace DemoRestAPI.Products.Requests
     {
         
         [JsonProperty("username", Required = Required.Always)]
-        public string? userName { get; set; }
+        public string? username { get; set; }
 
         
         [JsonProperty("device_id", Required = Required.Always)]

@@ -22,10 +22,7 @@ namespace DemoRestAPI.Warehouses
             _warehouseService = warehouseService;
         }
 
-        // megkell oldani a szabályokat is
-
         [HttpPost("save")]
-        //[Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
@@ -48,7 +45,6 @@ namespace DemoRestAPI.Warehouses
         }
 
         [HttpGet("all")]
-        //[Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
         [ProducesResponseType(typeof(WareHouseListResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(WareHouseListResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(WareHouseListResponse), StatusCodes.Status200OK)]

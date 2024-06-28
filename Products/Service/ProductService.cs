@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿using AudioShopInventoryManagementRestAPI.Helpers;
+using Azure.Core;
 using DemoRestAPI.Brands;
 using DemoRestAPI.Brands.Repository;
 using DemoRestAPI.Brands.Response;
@@ -54,57 +55,51 @@ namespace DemoRestAPI.Products.Service
             Device searchedDevice = await _deviceRepository.SearchByDeviceId(request.deviceId);
             if (searchedDevice == null)
             {
-                return DeviceHelper.GetBaseResponse(DeviceEnum.FOUND_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.DEVICE_FOUND_FAILED);
             }
 
-            User searchedUser = await _userRepository.SearchByUserNameAndDeviceId(request.userName, searchedDevice.Id);
+            User searchedUser = await _userRepository.SearchByUserNameAndDeviceId(request.username, searchedDevice.Id);
             if (searchedUser == null)
             {
-                return UserHelper.GetBaseResponse(UserEnum.USER_NOT_FOUND);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.USER_NOT_FOUND);
             }
 
             foreach (var item in request.productList!)
             {
-                Product existedProduct = await _productRepository.SearchByBarcode(item.barcode);
-                if (existedProduct != null)
-                {
-                    return ProductHelper.GetBaseResponse(ProductEnum.EXISTED);
-                }
-
                 Brand searchedBrand = await _brandRepository.SearchByBrandId(item.brandId);
                 if (searchedBrand == null)
                 {
-                    return BrandHelper.GetBaseResponse(BrandEnum.FOUND_FAILED);
+                    return ResponseProvider.GetBaseResponse(ResponseEnum.BRAND_NOT_EXIST);
                 }
 
                 Category searchedCategory = await _categoryRepository.SearchByCategoryId(item.categoryId);
                 if (searchedCategory == null)
                 {
-                    return CategoryHelper.GetBaseResponse(CategoryEnum.FOUND_FAILED);
+                    return ResponseProvider.GetBaseResponse(ResponseEnum.CATEGORY_NOT_EXIST);
                 }
 
                 Model searchedModel = await _modelRepository.SearchByModelId(item.modelId);
                 if (searchedModel == null)
                 {
-                    return ModelHelper.GetBaseResponse(ModelEnum.FOUND_FAILED);
+                    return ResponseProvider.GetBaseResponse(ResponseEnum.MODEL_NOT_EXIST);
                 }
 
                 Warehouse searchedWareHouse = await _warehouseRepository.SearchByWarehouseId(item.wareHouseId);
                 if (searchedWareHouse == null)
                 {
-                    return WarehouseHelper.GetBaseResponse(WarehouseEnum.FOUND_FAILED);
+                    return ResponseProvider.GetBaseResponse(ResponseEnum.WAREHOUSE_NOT_EXIST);
                 }
 
                 Storage searchedStorage = await _storageRepository.AsyncSearchById(item.storageId, searchedWareHouse.Id);
                 if (searchedStorage == null)
                 {
-                    return StorageHelper.GetBaseResponse(StorageEnum.FOUND_FAILED);
+                    return ResponseProvider.GetBaseResponse(ResponseEnum.STORAGE_NOT_EXIST);
                 }
 
                 string productId = Helper.GetProductId(searchedBrand.BrandId!, searchedCategory.CategoryId!, searchedModel.ModelId!);
                 if (productId == null)
                 {
-                    return ProductHelper.GetBaseResponse(ProductEnum.ID_GENERATION_FAILED);
+                    return ResponseProvider.GetBaseResponse(ResponseEnum.PRODUCT_ID_GENERATION_FAILED);
                 }
 
                 Product newProduct = new Product
@@ -125,17 +120,29 @@ namespace DemoRestAPI.Products.Service
                 Product resultProduct = await _productRepository.Add(newProduct);
                 if (resultProduct == null)
                 {
-                    return ProductHelper.GetBaseResponse(ProductEnum.SAVE_FAILED);
+                    return ResponseProvider.GetBaseResponse(ResponseEnum.PRODUCT_SAVE_FAILED);
                 }
 
                 bool isUpdatedStorage = await _storageRepository.IncrementQuantity(searchedStorage.StorageId);
                 if (isUpdatedStorage == false)
                 {
-                    return StorageHelper.GetBaseResponse(StorageEnum.QUANTITY_INCREMENT_FAILED);
+                    return ResponseProvider.GetBaseResponse(ResponseEnum.STORAGE_QUANTITY_INCREMENT_FAILED);
+                }
+
+                isUpdatedStorage = await _storageRepository.IncrementStorageValues(searchedStorage.StorageId, newProduct.BasePrice, newProduct.WholeSalePrice);
+                if (isUpdatedStorage == false)
+                {
+                    return ResponseProvider.GetBaseResponse(ResponseEnum.STORAGE_PRICEVALUES_INCREMENT_FAILED);
+                }
+
+                bool isUpdatedWarehouse = await _warehouseRepository.IncrementWarehouseValues(searchedStorage.WareHouseId, newProduct.BasePrice, newProduct.WholeSalePrice);
+                if (isUpdatedWarehouse == false)
+                {
+                    return ResponseProvider.GetBaseResponse(ResponseEnum.WAREHOUSE_PRICEVALUES_INCREMENT_FAILED);
                 }
             }
 
-            return ProductHelper.GetBaseResponse(ProductEnum.SAVE_SUCCESSFUL);
+            return ResponseProvider.GetBaseResponse(ResponseEnum.PRODUCT_SAVE_SUCCESSFUL);
         }
 
         public async Task<ProductListResponse> GetProducts(GetProductsRequest request)
@@ -143,7 +150,7 @@ namespace DemoRestAPI.Products.Service
             List<Product> products = await _productRepository.GetProducts((int)request.PageIndex, (int)request.PageSize);
             if (products == null)
             {
-                return ProductHelper.GetProductListResponse(ProductEnum.NOT_EXISTED);
+                return ResponseProvider.GetProductListResponse(ResponseEnum.PRODUCT_NOT_EXIST);
             }
 
             List<ProductDetails> productDetailsList = new List<ProductDetails>();
@@ -164,14 +171,14 @@ namespace DemoRestAPI.Products.Service
                     s = await _storageRepository.SearchById(p.StorageId, u.WareHouseId);
                 }
 
-                ProductDetails mappedObject = Helper.MappingToProductDetailsObject(p, b, c, m, u, d, w, s);
+                ProductDetails mappedObject = DetailsMapper.MappingToProductDetailsObject(p, b, c, m, u, d, w, s);
                 if (mappedObject != null)
                 {
                     productDetailsList.Add(mappedObject);
                 }
             }
 
-            ProductListResponse response = ProductHelper.GetProductListResponse(ProductEnum.PORDUCT_LIST_SUCCESS);
+            ProductListResponse response = ResponseProvider.GetProductListResponse(ResponseEnum.PRODUCT_LIST_SUCCESS);
             response.productDetails = productDetailsList;
 
             return response;
@@ -182,34 +189,46 @@ namespace DemoRestAPI.Products.Service
             Product existedProduct = await _productRepository.SearchByBarcode(barcode);
             if (existedProduct == null)
             {
-                return ProductHelper.GetBaseResponse(ProductEnum.NOT_EXISTED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.PRODUCT_NOT_EXIST);
             }
 
             bool isDeletedProduct = await _productRepository.DeleteProduct(existedProduct);
             if (isDeletedProduct == false)
             {
-                return ProductHelper.GetBaseResponse(ProductEnum.DELETED_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.PRODUCT_DELETED_FAILED);
             }
 
             Warehouse searchedWarehouse = await _warehouseRepository.SearchByWarehouseId(warehouseId);
             if (searchedWarehouse == null)
             {
-                return WarehouseHelper.GetBaseResponse(WarehouseEnum.FOUND_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.WAREHOUSE_NOT_EXIST);
             }
 
             Storage searchedStorage = await _storageRepository.AsyncSearchById(storageId, searchedWarehouse.Id);
             if (searchedStorage == null)
             {
-                return StorageHelper.GetBaseResponse(StorageEnum.FOUND_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.STORAGE_NOT_EXIST);
             }
 
             bool isUpdatedStorage = await _storageRepository.DecrementQuantity(searchedStorage.StorageId);
             if (isUpdatedStorage == false)
             {
-                return StorageHelper.GetBaseResponse(StorageEnum.QUANTITY_DECREMENT_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.STORAGE_QUANTITY_DECREMENT_FAILED);
             }
 
-            return ProductHelper.GetBaseResponse(ProductEnum.DELETED_SUCCESS);
+            isUpdatedStorage = await _storageRepository.DecrementStorageValues(searchedStorage.StorageId, existedProduct.BasePrice, existedProduct.WholeSalePrice);
+            if (isUpdatedStorage == false)
+            {
+                return ResponseProvider.GetBaseResponse(ResponseEnum.STORAGE_PRICEVALUES_DECREMENT_FAILED);
+            }
+
+            bool isUpdatedWarehouse = await _warehouseRepository.DecrementWarehouseValues(searchedStorage.WareHouseId, existedProduct.BasePrice, existedProduct.WholeSalePrice);
+            if (isUpdatedWarehouse == false)
+            {
+                return ResponseProvider.GetBaseResponse(ResponseEnum.WAREHOUSE_PRICEVALUES_DECREMENT_FAILED);
+            }
+
+            return ResponseProvider.GetBaseResponse(ResponseEnum.PRODUCT_DELETED_SUCCESS);
         }
 
         public async Task<ProductListResponse> GetProducts(string? storageId)
@@ -217,13 +236,13 @@ namespace DemoRestAPI.Products.Service
             Storage searchedStorage = await _storageRepository.SearchByStorageId(storageId);
             if (searchedStorage == null)
             {
-                return ProductHelper.GetProductListResponse(ProductEnum.NOT_EXISTED);
+                return ResponseProvider.GetProductListResponse(ResponseEnum.PRODUCT_NOT_EXIST);
             }
 
             List<Product> products = await _productRepository.GetProducts(searchedStorage.Id);
             if (products == null)
             {
-                return ProductHelper.GetProductListResponse(ProductEnum.NOT_EXISTED);
+                return ResponseProvider.GetProductListResponse(ResponseEnum.PRODUCT_NOT_EXIST);
             }
 
             List<ProductDetails> productDetailsList = new List<ProductDetails>();
@@ -242,14 +261,14 @@ namespace DemoRestAPI.Products.Service
                     w = await _warehouseRepository.SearchById(u.WareHouseId);
                 }
 
-                ProductDetails mappedObject = Helper.MappingToProductDetailsObject(p, b, c, m, u, d, w, searchedStorage);
+                ProductDetails mappedObject = DetailsMapper.MappingToProductDetailsObject(p, b, c, m, u, d, w, searchedStorage);
                 if (mappedObject != null)
                 {
                     productDetailsList.Add(mappedObject);
                 }
             }
 
-            ProductListResponse response = ProductHelper.GetProductListResponse(ProductEnum.PORDUCT_LIST_SUCCESS);
+            ProductListResponse response = ResponseProvider.GetProductListResponse(ResponseEnum.PRODUCT_LIST_SUCCESS);
             response.productDetails = productDetailsList;
 
             return response;

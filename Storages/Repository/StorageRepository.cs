@@ -1,6 +1,4 @@
-﻿using DemoRestAPI.Warehouses;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client.Extensions.Msal;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace DemoRestAPI.Storages.Repository
 {
@@ -78,7 +76,7 @@ namespace DemoRestAPI.Storages.Repository
             //Kivesszük a jelenlegi (le nem csökkentett) quantity értéket
             var oldQuantity = searchedStorage.Quantity;
 
-            //Növeljük a quantity értéket, majd mentjük a változott értéket az adatbázisba
+            //Csökkentjük a quantity értéket, majd mentjük a változott értéket az adatbázisba
             searchedStorage.Quantity -= 1;
             searchedStorage.ModifiedAt = DateTime.Now;
             await _context.SaveChangesAsync();
@@ -130,6 +128,89 @@ namespace DemoRestAPI.Storages.Repository
 
             if (storageList == null || searchedStorageList == null || searchedStorageList.Count == 0) { return null; }
             return searchedStorageList;
+        }
+
+        public async Task<bool> IncrementStorageValues(string? storageId, int? basePrice, int? wholeSalePrice)
+        {
+            //Id alapján megkeressük az Storage-t az adatbázisban.
+            var searchedStorage = await _context.Storages
+                .FirstOrDefaultAsync(u => u.StorageId == storageId);
+
+            //Ha nem találtuk meg, akkor false értékkel visszatérünk
+            if (searchedStorage == null) return false;
+
+            //Ha a basePrice és WholePrice egyenlő 0-val (tehát a két ár 0) vagy ha mindkét szám kisebb mint 0, akkor szintén visszatérünk, nem dolgozunk 0 összeggel
+            if (basePrice <= 0) return false;
+            if (wholeSalePrice <= 0) return false;
+
+            //Kivesszük a jelenlegi (meg nem növelt) StorageNettoValue értéket
+            var oldNettoValue = searchedStorage.NettoValue;
+
+            //Kivesszük a jelenlegi (meg nem növelt) StorageBruttoValue értéket
+            var oldBruttoValue = searchedStorage.BruttoValue;
+
+            //Növeljük a StorageNettoValue értéket, majd mentjük a változott értéket az adatbázisba
+            searchedStorage.NettoValue += basePrice;
+
+            //Növeljük a StorageBruttoValue értéket, majd mentjük a változott értéket az adatbázisba
+            searchedStorage.BruttoValue += wholeSalePrice;
+
+            searchedStorage.ModifiedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            //Kivesszük a megnövelt StorageNettoValue és StorageBruttoValue értékeket
+            var incrementedStorageNettoValue = searchedStorage.NettoValue;
+            var incrementedStorageBruttoValue = searchedStorage.BruttoValue;
+
+            //Megvizsgáljuk, hogy sikeres volt az növelés vagy sem
+            // Ha NEM, akkor false-sal térünk vissza
+            // Ha IGEN, akkor pedig true-val
+            if (oldNettoValue == incrementedStorageNettoValue) return false;
+            if (oldBruttoValue == incrementedStorageBruttoValue) return false;
+
+            Console.WriteLine("Ok");
+            
+            return true;
+        }
+
+        public async Task<bool> DecrementStorageValues(string? storageId, int basePrice, int wholeSalePrice)
+        {
+            //Id alapján megkeressük az Storage-t az adatbázisban.
+            var searchedStorage = await _context.Storages
+                .FirstOrDefaultAsync(u => u.StorageId == storageId);
+
+            //Ha nem találtuk meg, akkor false értékkel visszatérünk
+            if (searchedStorage == null) { return false; }
+
+            //Ha a basePrice és WholePrice egyenlő 0-val (tehát a két ár 0) vagy ha mindkét szám kisebb mint 0, akkor szintén visszatérünk, nem dolgozunk 0 összeggel
+            if (basePrice <= 0) return false;
+            if (wholeSalePrice <= 0) return false;
+
+            //Kivesszük a jelenlegi (le nem csökkentett) StorageNettoValue értéket
+            var oldNettoValue = searchedStorage.NettoValue;
+
+            //Kivesszük a jelenlegi (le nem csökkentett) StorageBruttoValue értéket
+            var oldBruttoValue = searchedStorage.BruttoValue;
+
+            //Csökentjük a StorageNettoValue értéket, majd mentjük a változott értéket az adatbázisba
+            searchedStorage.NettoValue -= basePrice;
+
+            //Csökentjük a StorageBruttoValue értéket, majd mentjük a változott értéket az adatbázisba
+            searchedStorage.BruttoValue -= wholeSalePrice;
+
+            searchedStorage.ModifiedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            //Kivesszük a lecsökentett StorageNettoValue és StorageBruttoValue értékeket
+            var incrementedStorageNettoValue = searchedStorage.NettoValue;
+            var incrementedStorageBruttoValue = searchedStorage.BruttoValue;
+
+            //Megvizsgáljuk, hogy sikeres volt az csökkentés vagy sem
+            // Ha NEM, akkor false-sal térünk vissza
+            // Ha IGEN, akkor pedig true-val
+            if (oldNettoValue == incrementedStorageNettoValue) return false;
+            if (oldBruttoValue == incrementedStorageBruttoValue) return false;
+            return true;
         }
     }
 }

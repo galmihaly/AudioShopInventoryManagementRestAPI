@@ -1,4 +1,5 @@
-﻿using DemoRestAPI.Brands;
+﻿using AudioShopInventoryManagementRestAPI.Helpers;
+using DemoRestAPI.Brands;
 using DemoRestAPI.Categories.Repository;
 using DemoRestAPI.Categories.Request;
 using DemoRestAPI.Categories.Response;
@@ -20,7 +21,7 @@ namespace DemoRestAPI.Categories.Service
             Category existedCategory = await _categoryRepository.SearchByName(request.Name);
             if (existedCategory != null)
             {
-                return CategoryHelper.GetBaseResponse(CategoryEnum.EXISTED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.CATEGORY_ALREADY_EXIST);
             }
 
             Category newCategory = new Category
@@ -33,10 +34,10 @@ namespace DemoRestAPI.Categories.Service
             Category resultCategory = await _categoryRepository.Add(newCategory);
             if (resultCategory == null)
             {
-                return CategoryHelper.GetBaseResponse(CategoryEnum.SAVE_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.CATEGORY_SAVE_FAILED);
             }
 
-            return CategoryHelper.GetBaseResponse(CategoryEnum.SAVE_SUCCESSFUL);
+            return ResponseProvider.GetBaseResponse(ResponseEnum.CATEGORY_SAVE_SUCCESSFUL);
         }
 
         public async Task<CategoryListResponse> GetAllCategory()
@@ -44,21 +45,21 @@ namespace DemoRestAPI.Categories.Service
             List<Category> categories = await _categoryRepository.GetCategories();
             if (categories == null)
             {
-                return CategoryHelper.GetCategoryListResponse(CategoryEnum.NOT_EXISTED);
+                return ResponseProvider.GetCategoryListResponse(ResponseEnum.CATEGORY_NOT_EXIST);
             }
 
             List<Category> categoryList = categories.ToList();
             List<CategoryDetails> categoryDetailsList = new List<CategoryDetails>();
             categoryList.ForEach(c =>
             {
-                CategoryDetails mappedObject = Helper.MappingToCategoryDetailsObject(c);             
+                CategoryDetails mappedObject = DetailsMapper.MappingToCategoryDetailsObject(c);             
                 if (mappedObject != null)
                 {
                     categoryDetailsList.Add(mappedObject);
                 }
             });
 
-            CategoryListResponse response = CategoryHelper.GetCategoryListResponse(CategoryEnum.CATEGORY_LIST_SUCCESS);
+            CategoryListResponse response = ResponseProvider.GetCategoryListResponse(ResponseEnum.CATEGORY_LIST_SUCCESS);
             response.categoryDetails = categoryDetailsList;
 
             return response;

@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿using AudioShopInventoryManagementRestAPI.Helpers;
+using Azure.Core;
 using DemoRestAPI.Helpers;
 using DemoRestAPI.Models;
 using DemoRestAPI.Storages.Repository;
@@ -26,13 +27,13 @@ namespace DemoRestAPI.Storages.Service
             Warehouse searchedWarehouse = await _warehouseRepository.SearchByWarehouseId(request.WareHouseId);
             if (searchedWarehouse == null)
             {
-                return WarehouseHelper.GetBaseResponse(WarehouseEnum.FOUND_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.WAREHOUSE_NOT_EXIST);
             }
 
             Storage existedStorage = await _storageRepository.AsyncSearchById(request.StorageId, searchedWarehouse.Id);
             if (existedStorage != null)
             {
-                return StorageHelper.GetBaseResponse(StorageEnum.NOT_EXISTED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.STORAGE_NOT_EXIST);
             }
 
             Storage newStorage = new Storage
@@ -41,6 +42,8 @@ namespace DemoRestAPI.Storages.Service
                 StorageId = request.StorageId,
                 Quantity = request.Quantity,
                 MaxQuantity = request.MaxQuantity,
+                NettoValue = request.NettoValue,
+                BruttoValue = request.BruttoValue,
                 CreatedAt = DateTime.Now,
                 ModifiedAt = DateTime.Now
             };
@@ -48,16 +51,16 @@ namespace DemoRestAPI.Storages.Service
             Storage resultStorage = await _storageRepository.Add(newStorage);
             if (resultStorage == null)
             {
-                return StorageHelper.GetBaseResponse(StorageEnum.SAVE_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.STORAGE_SAVE_FAILED);
             }
 
             bool isIncrementedWarehouse = await _warehouseRepository.IncrementCurrentStockCapacity(request.WareHouseId);
             if (isIncrementedWarehouse == false)
             {
-                return WarehouseHelper.GetBaseResponse(WarehouseEnum.NOT_INCREMENTED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.WAREHOUSE_NOT_INCREMENTED);
             }
 
-            return StorageHelper.GetBaseResponse(StorageEnum.SAVE_SUCCESSFUL);
+            return ResponseProvider.GetBaseResponse(ResponseEnum.STORAGE_SAVE_SUCCESSFUL);
         }
 
         public async Task<StorageListResponse> GetStorages(string? warehouseId)
@@ -65,20 +68,20 @@ namespace DemoRestAPI.Storages.Service
             Warehouse searchedWarehouse = await _warehouseRepository.SearchByWarehouseId(warehouseId);
             if (searchedWarehouse == null)
             {
-                return StorageHelper.GetStorageListResponse(WarehouseEnum.FOUND_FAILED);
+                return ResponseProvider.GetStorageListResponse(ResponseEnum.WAREHOUSE_NOT_EXIST);
             }
 
             List<Storage> existedStorageList = await _storageRepository.GetStoragesByWarehouseId(searchedWarehouse.Id);
             if (existedStorageList == null || existedStorageList.Count == 0)
             {
-                return StorageHelper.GetStorageListResponse(StorageEnum.NOT_EXISTED);
+                return ResponseProvider.GetStorageListResponse(ResponseEnum.STORAGE_NOT_EXIST);
             }
 
             List<StorageDetails> storageDetailsList = new List<StorageDetails>();
             foreach (var s in existedStorageList)
             {
                 Console.WriteLine(s);
-                StorageDetails mappedObject = Helper.MappingToStorageDetailsObject(s);
+                StorageDetails mappedObject = DetailsMapper.MappingToStorageDetailsObject(s);
                 if (mappedObject != null)
                 {
                     Console.WriteLine(mappedObject);
@@ -86,7 +89,7 @@ namespace DemoRestAPI.Storages.Service
                 }
             }
 
-            StorageListResponse r = StorageHelper.GetStorageListResponse(StorageEnum.FOUND_SUCCESSFUL);
+            StorageListResponse r = ResponseProvider.GetStorageListResponse(ResponseEnum.STORAGE_FOUND_SUCCESSFUL);
             r.storageDetailsList = storageDetailsList;
 
             return r;

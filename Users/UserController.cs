@@ -20,7 +20,6 @@ namespace DemoRestAPI.Users
         }
 
         [HttpPost("register")]
-        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]

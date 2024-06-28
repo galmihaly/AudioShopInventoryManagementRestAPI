@@ -19,6 +19,10 @@ namespace DemoRestAPI.Warehouses
 
         public int? StockMaxCapacity { get; set; }
 
+        public int? NettoValue { get; set; }
+
+        public int? BruttoValue { get; set; }
+
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{yyyy-MM-dd HH:mm:ss}")]
         public DateTime CreatedAt { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using DemoRestAPI.Devices;
+﻿using AudioShopInventoryManagementRestAPI.Helpers;
+using DemoRestAPI.Devices;
 using DemoRestAPI.Helpers;
 using DemoRestAPI.Users.Authentication;
 using DemoRestAPI.Users.Request;
@@ -37,7 +38,7 @@ namespace DemoRestAPI.Users.Service
             Warehouse searchedWarehouse = await _warehouseRepository.SearchByWarehouseId(userRequest.WareHouseId);
             if (searchedWarehouse == null)
             {
-                return WarehouseHelper.GetBaseResponse(WarehouseEnum.FOUND_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.WAREHOUSE_NOT_EXIST);
             }
 
             Device NewDevice = new Device
@@ -68,10 +69,10 @@ namespace DemoRestAPI.Users.Service
             IdentityResult result = await _userManager.CreateAsync(newUser, userRequest.Password);
             if (!result.Succeeded)
             {
-                return UserHelper.GetBaseResponse(UserEnum.REGISTER_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.USER_REGISTER_FAILED);
             }
 
-            return UserHelper.GetBaseResponse(UserEnum.REGISTER_SUCCESS);
+            return ResponseProvider.GetBaseResponse(ResponseEnum.USER_REGISTER_SUCCESS);
         }
 
         public async Task<LoginUserResponse> LoginUser(LoginUserRequest loginRequest)
@@ -82,12 +83,12 @@ namespace DemoRestAPI.Users.Service
                 bool isValidPassword = await _userManager.CheckPasswordAsync(identityUser, loginRequest.Password);
                 if (identityUser is null || isValidPassword == false)
                 {
-                    return UserHelper.GetLoginUserResponse(UserEnum.LOGIN_FAILED);
+                    return ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_LOGIN_FAILED);
                 }
             }
             else
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.USER_NOT_FOUND);
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_NOT_FOUND);
             }
 
             return await GenerateTokensWithUserUpdate(identityUser);
@@ -98,28 +99,28 @@ namespace DemoRestAPI.Users.Service
             ClaimsPrincipal principal = GetTokenPrincipal(refreshRequest.AccessToken);
             if (principal == null)
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.PRINCIPAL_NOT_FOUND);
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_PRINCIPAL_NOT_FOUND);
             }
 
             if (principal?.Identity?.Name is null)
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.PRINCIPAL_NAME_NOT_FOUND); ;
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_PRINCIPAL_NAME_NOT_FOUND); ;
             }
 
             User user = await _userManager.FindByNameAsync(principal.Identity.Name);
             if (user == null)
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.USER_NOT_FOUND);
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_NOT_FOUND);
             }
 
             if (user.RefreshToken != refreshRequest.RefreshToken)
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.REFRESHTOKEN_NOT_SAME);
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_REFRESHTOKEN_NOT_SAME);
             }
 
             if (user.RefreshTokenExpiration < DateTime.Now.AddHours(2))
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.REFRESHTOKEN_NOT_EXPIRED);
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_REFRESHTOKEN_NOT_EXPIRED);
             }
 
             return await GenerateTokensWithUserUpdate(user);
@@ -130,25 +131,25 @@ namespace DemoRestAPI.Users.Service
             Device searchedDevice = await _deviceRepository.SearchById(user.DeviceId);
             if (searchedDevice == null)
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.DEVICE_NOT_FOUND);
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.DEVICE_FOUND_FAILED);
             }
 
             Warehouse searchedWarehouse = await _warehouseRepository.SearchById(user.WareHouseId);
             if (searchedWarehouse == null)
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.WAREHOUSE_NOT_FOUND);
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.WAREHOUSE_NOT_EXIST);
             }
 
             string accessToken = GenerateAccessTokenString(user, searchedDevice, searchedWarehouse);
             if (accessToken == null)
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.ACCESSTOKEN_GENERATION_FAILED);
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_ACCESSTOKEN_GENERATION_FAILED);
             }
 
             string refreshToken = GenerateRefreshTokenString();
             if (refreshToken == null)
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.REFRESHTOKEN_GENERATION_FAILED);
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_REFRESHTOKEN_GENERATION_FAILED);
             }
 
             LoginUserDetails details = new LoginUserDetails
@@ -163,10 +164,10 @@ namespace DemoRestAPI.Users.Service
             IdentityResult updatedUser = await _userManager.UpdateAsync(user);
             if (!updatedUser.Succeeded)
             {
-                return UserHelper.GetLoginUserResponse(UserEnum.USER_NOT_UPDATED);
+                return ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_NOT_UPDATED);
             }
 
-            LoginUserResponse response = UserHelper.GetLoginUserResponse(UserEnum.LOGIN_SUCCESS);
+            LoginUserResponse response = ResponseProvider.GetLoginUserResponse(ResponseEnum.USER_LOGIN_SUCCESS);
             response.loginUserDetails = details;
 
             return response;

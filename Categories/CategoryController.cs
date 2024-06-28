@@ -23,7 +23,6 @@ namespace DemoRestAPI.Categories
         }
 
         [HttpPost("save")]
-        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
@@ -46,7 +45,6 @@ namespace DemoRestAPI.Categories
         }
 
         [HttpGet("all")]
-        [Authorize]
         [ProducesResponseType(typeof(CategoryListResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(CategoryListResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCategory()

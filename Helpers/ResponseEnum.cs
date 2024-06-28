@@ -1,0 +1,87 @@
+﻿namespace AudioShopInventoryManagementRestAPI.Helpers
+{
+    public enum ResponseEnum
+    {
+        /* Brand Enums */
+        BRAND_FOUND_SUCCESSFUL,
+        BRAND_SAVE_SUCCESSFUL,
+        BRAND_SAVE_FAILED,
+        BRAND_ALREADY_EXIST,
+        BRAND_NOT_EXIST,
+        BRAND_PRODUCT_LIST_SUCCESS,
+        BRAND_LIST_SUCCESS,
+        /* ----------- */
+
+        /* Category Enums */
+        CATEGORY_FOUND_SUCCESSFUL,
+        CATEGORY_SAVE_SUCCESSFUL,
+        CATEGORY_SAVE_FAILED,
+        CATEGORY_ALREADY_EXIST,
+        CATEGORY_NOT_EXIST,
+        CATEGORY_PRODUCT_LIST_SUCCESS,
+        CATEGORY_LIST_SUCCESS,
+        /* ----------- */
+
+        /* Model Enums */
+        MODEL_FOUND_SUCCESSFUL,
+        MODEL_SAVE_SUCCESSFUL,
+        MODEL_SAVE_FAILED,
+        MODEL_ALREADY_EXIST,
+        MODEL_NOT_EXIST,
+        MODEL_PRODUCT_LIST_SUCCESS,
+        MODEL_LIST_SUCCESS,
+        /* ----------- */
+
+        /* Storage Enums */
+        STORAGE_SAVE_SUCCESSFUL,
+        STORAGE_SAVE_FAILED,
+        STORAGE_FOUND_SUCCESSFUL,
+        STORAGE_NOT_EXIST,
+        STORAGE_QUANTITY_INCREMENT_FAILED,
+        STORAGE_QUANTITY_DECREMENT_FAILED,
+        STORAGE_PRICEVALUES_INCREMENT_FAILED,
+        STORAGE_PRICEVALUES_DECREMENT_FAILED,
+        /* ----------- */
+
+        /* Warehouse Enums */
+        WAREHOUSE_FOUND_SUCCESSFUL,
+        WAREHOUSE_SAVE_SUCCESSFUL,
+        WAREHOUSE_SAVE_FAILED,
+        WAREHOUSE_NOT_EXIST,
+        WAREHOUSE_NOT_INCREMENTED,
+        WAREHOUSE_PRICEVALUES_INCREMENT_FAILED,
+        WAREHOUSE_PRICEVALUES_DECREMENT_FAILED,
+        /* ----------- */
+
+        /* Product Enums */
+        PRODUCT_SAVE_SUCCESSFUL,
+        PRODUCT_SAVE_FAILED,
+        PRODUCT_FOUND_SUCCESSFUL,
+        PRODUCT_NOT_EXIST,
+        PRODUCT_DELETED_SUCCESS,
+        PRODUCT_DELETED_FAILED,
+        PRODUCT_LIST_SUCCESS,
+        PRODUCT_ID_GENERATION_FAILED,
+        /* ----------- */
+
+        /* Devices Enums */
+        DEVICE_FOUND_FAILED,
+        DEVICE_FOUND_SUCCESSFUL,
+        /* ----------- */
+
+        /* Users Enums */
+        USER_REGISTER_SUCCESS,
+        USER_REGISTER_FAILED,
+        USER_LOGIN_SUCCESS,
+        USER_LOGIN_FAILED,
+        USER_REFRESHTOKEN_GENERATION_FAILED,
+        USER_PRINCIPAL_NOT_FOUND,
+        USER_PRINCIPAL_NAME_NOT_FOUND,
+        USER_NOT_FOUND,
+        USER_NOT_UPDATED,
+        USER_REFRESHTOKEN_NOT_EXPIRED,
+        USER_REFRESHTOKEN_NOT_SAME,
+        USER_ACCESSTOKEN_GENERATION_FAILED,
+        /* ----------- */
+    }
+}

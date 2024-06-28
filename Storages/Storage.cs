@@ -21,6 +21,10 @@ namespace DemoRestAPI.Storages
 
         public int? MaxQuantity { get; set; }
 
+        public int? NettoValue { get; set;}
+
+        public int? BruttoValue { get; set;}
+
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd HH:mm:ss}")]
         public DateTime CreatedAt { get; set; }
 

@@ -9,6 +9,7 @@ using DemoRestAPI.Users;
 using DemoRestAPI.Warehouses;
 using DemoRestAPI.Brands.Request;
 using DemoRestAPI.Brands.Repository;
+using AudioShopInventoryManagementRestAPI.Helpers;
 
 namespace DemoRestAPI.Brands.Service
 {
@@ -26,7 +27,7 @@ namespace DemoRestAPI.Brands.Service
             Brand existedBrand = await _brandRepository.SearchByName(request.Name);
             if (existedBrand != null)
             {
-                return BrandHelper.GetBaseResponse(BrandEnum.EXISTED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.BRAND_ALREADY_EXIST);
             }
 
             Brand NewBrand = new Brand
@@ -40,10 +41,10 @@ namespace DemoRestAPI.Brands.Service
             Brand resultBrand = await _brandRepository.Add(NewBrand);
             if (resultBrand == null)
             {
-                return BrandHelper.GetBaseResponse(BrandEnum.SAVE_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.BRAND_SAVE_FAILED);
             }
 
-            return BrandHelper.GetBaseResponse(BrandEnum.SAVE_SUCCESSFUL);
+            return ResponseProvider.GetBaseResponse(ResponseEnum.BRAND_SAVE_SUCCESSFUL);
         }
 
         public async Task<BrandListResponse> GetAllBrand()
@@ -51,21 +52,21 @@ namespace DemoRestAPI.Brands.Service
             List<Brand> brands = await _brandRepository.GetBrands();
             if (brands == null)
             {
-                return BrandHelper.GetBrandListResponse(BrandEnum.NOT_EXISTED);
+                return ResponseProvider.GetBrandListResponse(ResponseEnum.BRAND_NOT_EXIST);
             }
 
             List<Brand> brandList = brands.ToList();
             List<BrandDetails> brandDetailsList = new List<BrandDetails>();
             brandList.ForEach(b =>
             {
-                BrandDetails mappedObject = Helper.MappingToBrandDetailsObject(b);
+                BrandDetails mappedObject = DetailsMapper.MappingToBrandDetailsObject(b);
                 if(mappedObject != null)
                 {
                     brandDetailsList.Add(mappedObject);
                 }
             });
 
-            BrandListResponse response = BrandHelper.GetBrandListResponse(BrandEnum.BRAND_LIST_SUCCESS);
+            BrandListResponse response = ResponseProvider.GetBrandListResponse(ResponseEnum.BRAND_LIST_SUCCESS);
             response.brandDetails = brandDetailsList;
 
             return response;

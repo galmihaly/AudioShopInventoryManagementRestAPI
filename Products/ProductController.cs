@@ -22,7 +22,6 @@ namespace DemoRestAPI.Products
         }
 
         [HttpPost("save")]
-        [Authorize]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
@@ -45,7 +44,6 @@ namespace DemoRestAPI.Products
         }
 
         [HttpPost("getproducts")]
-        [Authorize]
         [ProducesResponseType(typeof(ProductListResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProductListResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ProductListResponse), StatusCodes.Status200OK)]
@@ -68,7 +66,6 @@ namespace DemoRestAPI.Products
         }
 
         [HttpDelete("delete/{barcode}/{storageId}/{warehouseId}")]
-        [Authorize]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]

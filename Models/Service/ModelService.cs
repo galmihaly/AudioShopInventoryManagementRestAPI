@@ -1,4 +1,5 @@
-﻿using DemoRestAPI.Categories;
+﻿using AudioShopInventoryManagementRestAPI.Helpers;
+using DemoRestAPI.Categories;
 using DemoRestAPI.Categories.Response;
 using DemoRestAPI.Helpers;
 using DemoRestAPI.Models.Repository;
@@ -21,7 +22,7 @@ namespace DemoRestAPI.Models.Service
             Model existedModel = await _modelRepository.SearchByName(request.Name);
             if (existedModel != null)
             {
-                return ModelHelper.GetBaseResponse(ModelEnum.EXISTED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.MODEL_ALREADY_EXIST);
             }
 
             Model NewModel = new Model
@@ -34,10 +35,10 @@ namespace DemoRestAPI.Models.Service
             Model ResultModel = await _modelRepository.Add(NewModel);
             if (ResultModel == null)
             {
-                return ModelHelper.GetBaseResponse(ModelEnum.SAVE_FAILED);
+                return ResponseProvider.GetBaseResponse(ResponseEnum.MODEL_SAVE_FAILED);
             }
 
-            return ModelHelper.GetBaseResponse(ModelEnum.SAVE_SUCCESSFUL);
+            return ResponseProvider.GetBaseResponse(ResponseEnum.MODEL_SAVE_SUCCESSFUL);
         }
 
         public async Task<ModelListResponse> GetAllModel()
@@ -45,21 +46,21 @@ namespace DemoRestAPI.Models.Service
             List<Model> models = await _modelRepository.GetModels();
             if (models == null)
             {
-                return ModelHelper.GetModelListResponse(ModelEnum.NOT_EXISTED);
+                return ResponseProvider.GetModelListResponse(ResponseEnum.MODEL_NOT_EXIST);
             }
 
             List<Model> modelList = models.ToList();
             List<ModelDetails> modelsDetailsList = new List<ModelDetails>();
             modelList.ForEach(m =>
             {
-                ModelDetails mappedObject = Helper.MappingToModelDetailsObject(m);
+                ModelDetails mappedObject = DetailsMapper.MappingToModelDetailsObject(m);
                 if (mappedObject != null)
                 {
                     modelsDetailsList.Add(mappedObject);
                 }
             });
 
-            ModelListResponse response = ModelHelper.GetModelListResponse(ModelEnum.MODEL_LIST_SUCCESS);
+            ModelListResponse response = ResponseProvider.GetModelListResponse(ResponseEnum.MODEL_LIST_SUCCESS);
             response.modelDetails = modelsDetailsList;
 
             return response;

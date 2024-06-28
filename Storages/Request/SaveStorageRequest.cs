@@ -17,5 +17,11 @@ namespace DemoRestAPI.Storages.Request
 
         [JsonProperty("max_quantity", Required = Required.Always)]
         public int? MaxQuantity { get; set; }
+
+        [JsonProperty("netto_value", Required = Required.Always)]
+        public int? NettoValue { get; set; }
+
+        [JsonProperty("brutto_value", Required = Required.Always)]
+        public int? BruttoValue { get; set; }
     }
 }

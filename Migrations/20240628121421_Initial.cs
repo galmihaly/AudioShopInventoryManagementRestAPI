@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DemoRestAPI.Migrations
+namespace AudioShopInventoryManagementRestAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreates : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -83,6 +83,8 @@ namespace DemoRestAPI.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CurrentStockCapacity = table.Column<int>(type: "int", nullable: true),
                     StockMaxCapacity = table.Column<int>(type: "int", nullable: true),
+                    NettoValue = table.Column<int>(type: "int", nullable: true),
+                    BruttoValue = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -101,6 +103,8 @@ namespace DemoRestAPI.Migrations
                     WareHouseId = table.Column<int>(type: "int", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: true),
                     MaxQuantity = table.Column<int>(type: "int", nullable: true),
+                    NettoValue = table.Column<int>(type: "int", nullable: true),
+                    BruttoValue = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
