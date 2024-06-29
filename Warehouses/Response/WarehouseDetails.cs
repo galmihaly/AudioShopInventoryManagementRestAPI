@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace DemoRestAPI.Warehouses.Response
 {
@@ -18,5 +19,11 @@ namespace DemoRestAPI.Warehouses.Response
 
         [JsonProperty("stock_max_capacity", Required = Required.Always)]
         public int? StockMaxCapacity { get; set; }
+
+        [JsonProperty("netto_value", Required = Required.Always)]
+        public int? NettoValue { get; set; }
+
+        [JsonProperty("brutto_value", Required = Required.Always)]
+        public int? BruttoValue { get; set; }
     }
 }

@@ -5,24 +5,25 @@ namespace DemoRestAPI.Storages.Responses
 {
     public class StorageDetails
     {
-        [Required]
-        [JsonProperty("id")]
+        [JsonProperty("id", Required = Required.Always)]
         public int? Id { get; set; }
 
-        [Required]
-        [JsonProperty("storage_id")]
+        [JsonProperty("storage_id", Required = Required.Always)]
         public string? StorageId { get; set; }
 
-        [Required]
-        [JsonProperty("warehouse_id")]
+        [JsonProperty("warehouse_id", Required = Required.Always)]
         public int? WarehouseId { get; set; }
 
-        [Required]
-        [JsonProperty("quantity")]
+        [JsonProperty("quantity", Required = Required.Always)]
         public int? Quantity { get; set; }
 
-        [Required]
-        [JsonProperty("max_quantity")]
+        [JsonProperty("max_quantity", Required = Required.Always)]
         public int? MaxQuantity { get; set; }
+
+        [JsonProperty("netto_value", Required = Required.Always)]
+        public int? NettoValue { get; set; }
+
+        [JsonProperty("brutto_value", Required = Required.Always)]
+        public int? BruttoValue { get; set; }
     }
 }

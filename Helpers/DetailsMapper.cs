@@ -89,6 +89,8 @@ namespace DemoRestAPI.Helpers
                 Address = w.Address,
                 CurrentStockCapacity = w.CurrentStockCapacity,
                 StockMaxCapacity = w.StockMaxCapacity,
+                NettoValue = w.NettoValue,
+                BruttoValue = w.BruttoValue
             };
         }
 
@@ -102,7 +104,9 @@ namespace DemoRestAPI.Helpers
                 StorageId = s.StorageId,
                 WarehouseId = s.WareHouseId,
                 Quantity = s.Quantity,
-                MaxQuantity = s.MaxQuantity
+                MaxQuantity = s.MaxQuantity,
+                NettoValue = s.NettoValue,
+                BruttoValue = s.BruttoValue
             };
         }
     }
