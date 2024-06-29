@@ -23,6 +23,7 @@ namespace DemoRestAPI.Models
         }
 
         [HttpPost("save")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
@@ -45,6 +46,7 @@ namespace DemoRestAPI.Models
         }
 
         [HttpGet("all")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(ModelListResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ModelListResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllModel()

@@ -20,6 +20,7 @@ namespace DemoRestAPI.Users
         }
 
         [HttpPost("register")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
@@ -59,6 +60,7 @@ namespace DemoRestAPI.Users
         }
 
         [HttpPost("refreshtoken")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> RefreshToken(RefreshTokenRequest model)

@@ -47,7 +47,40 @@ namespace AuthServer.Api
 
                 builder.Services.AddEndpointsApiExplorer();
                 builder.Services.AddSwaggerGenNewtonsoftSupport();
-                builder.Services.AddSwaggerGen();
+                builder.Services.AddSwaggerGen(c =>
+{
+                    /*c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIv6", Version = "v1" });*/
+
+                    var securityScheme = new OpenApiSecurityScheme
+                    {
+                        Name = "JWT Authentication",
+                        Description = "Enter your JWT token in this field",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "bearer",
+                        BearerFormat = "JWT"
+                    };
+
+                    c.AddSecurityDefinition("Bearer", securityScheme);
+                    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                    {
+                            {
+                                new OpenApiSecurityScheme
+                                {
+                                    Reference = new OpenApiReference
+                                    {
+                                        Type = ReferenceType.SecurityScheme,
+                                        Id = "Bearer"
+                                    },
+                                    Scheme = "oauth2",
+                                    Name = "Bearer",
+                                    In = ParameterLocation.Header,
+
+                                },
+                                new List<string>()
+                            }
+                    });
+                });
 
                 builder.Services.AddDbContext<SqlDBContext>(options =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -66,8 +99,12 @@ namespace AuthServer.Api
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                }).AddJwtBearer(options =>
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                }).AddJwtBearer(o =>
                 {
+                    o.RequireHttpsMetadata = false;
+                    o.SaveToken = true;
+
                     string pathKey = builder.Configuration.GetSection("Jwt:PrivateKeyPath").Value;
                     string pathIssurer = builder.Configuration.GetSection("Jwt:Issuer").Value;
                     string pathAudience = builder.Configuration.GetSection("Jwt:Audience").Value;
@@ -88,7 +125,7 @@ namespace AuthServer.Api
 
                     if (key != null && pathIssurer != null && pathAudience != null)
                     {
-                        options.TokenValidationParameters = new TokenValidationParameters()
+                        o.TokenValidationParameters = new TokenValidationParameters()
                         {
                             ValidAudience = pathAudience,
                             ValidIssuer = pathIssurer,
@@ -102,9 +139,9 @@ namespace AuthServer.Api
                         };
                     }
 
-                    options.IncludeErrorDetails = true;
+                    o.IncludeErrorDetails = true;
                 });
-
+                builder.Services.AddAuthorization();
 
                 builder.Services.AddTransient<IAuthService, UserAuthService>();
                 builder.Services.AddTransient<IBrandService, BrandService>();

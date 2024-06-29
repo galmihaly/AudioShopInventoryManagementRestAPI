@@ -22,8 +22,8 @@ namespace DemoRestAPI.Brands
         }
 
         [HttpPost("save")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> SaveBrand([FromBody] SaveBrandRequest request)
@@ -45,6 +45,7 @@ namespace DemoRestAPI.Brands
         }
 
         [HttpGet("all")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(BrandListResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BrandListResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllBrand()

@@ -24,6 +24,7 @@ namespace DemoRestAPI.Storages
         }
 
         [HttpPost("save")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
@@ -47,6 +48,7 @@ namespace DemoRestAPI.Storages
         }
 
         [HttpGet("get/{warehouseId}")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(StorageListResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(StorageListResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(StorageListResponse), StatusCodes.Status200OK)]

@@ -11,7 +11,7 @@ namespace DemoRestAPI.Users.Repository
         {
             _context = context;
         }
-
+        
         public async Task<User> SearchByEmail(string? email)
         {
             var user = await _context.Users

@@ -23,6 +23,7 @@ namespace DemoRestAPI.Warehouses
         }
 
         [HttpPost("save")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
@@ -45,6 +46,7 @@ namespace DemoRestAPI.Warehouses
         }
 
         [HttpGet("all")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(typeof(WareHouseListResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(WareHouseListResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(WareHouseListResponse), StatusCodes.Status200OK)]
