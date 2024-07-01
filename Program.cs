@@ -104,12 +104,13 @@ namespace AuthServer.Api
                 {
                     o.RequireHttpsMetadata = false;
                     o.SaveToken = true;
+                    o.IncludeErrorDetails = true;
 
-                    string pathKey = builder.Configuration.GetSection("Jwt:PrivateKeyPath").Value;
+                    string pathKey = builder.Configuration.GetSection("Jwt:PublicKeyPath").Value;
                     string pathIssurer = builder.Configuration.GetSection("Jwt:Issuer").Value;
                     string pathAudience = builder.Configuration.GetSection("Jwt:Audience").Value;
 
-                    RsaSecurityKey key = null;
+                    RsaSecurityKey issurerSigningKey = null;
 
                     if (pathKey != null)
                     {
@@ -120,10 +121,10 @@ namespace AuthServer.Api
                         string xmlKey = File.ReadAllText(pathKey);
                         rsaKey.FromXmlString(xmlKey);
 
-                        key = new RsaSecurityKey(rsaKey);
+                        issurerSigningKey = new RsaSecurityKey(rsaKey);
                     }
 
-                    if (key != null && pathIssurer != null && pathAudience != null)
+                    if (issurerSigningKey != null && pathIssurer != null && pathAudience != null)
                     {
                         o.TokenValidationParameters = new TokenValidationParameters()
                         {
@@ -135,7 +136,7 @@ namespace AuthServer.Api
                             RequireExpirationTime = true,
                             ValidateIssuerSigningKey = true,
                             ClockSkew = TimeSpan.Zero,
-                            IssuerSigningKey = key,
+                            IssuerSigningKey = issurerSigningKey,
                         };
                     }
 

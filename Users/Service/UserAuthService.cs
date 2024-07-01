@@ -187,7 +187,7 @@ namespace DemoRestAPI.Users.Service
 
         private ClaimsPrincipal? GetTokenPrincipal(string token)
         {
-            RsaSecurityKey key = _rsaKeyGenerator.GetRsaKey();
+            RsaSecurityKey key = _rsaKeyGenerator.GetRsaAudienceSigningKey();
             if (key == null) return null;
 
             TokenValidationParameters validation = new TokenValidationParameters
@@ -204,7 +204,7 @@ namespace DemoRestAPI.Users.Service
 
         private string? GenerateAccessTokenString(User user, Device device, Warehouse warehouse)
         {
-            RsaSecurityKey rsaKey = _rsaKeyGenerator.GetRsaKey();
+            RsaSecurityKey rsaKey = _rsaKeyGenerator.GetRsaAudienceSigningKey();
             if (rsaKey == null)
             {
                 return null;
