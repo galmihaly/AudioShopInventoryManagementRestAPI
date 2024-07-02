@@ -238,7 +238,7 @@ namespace DemoRestAPI.Users.Service
 
             JwtSecurityToken securityToken = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(20),
+                expires: DateTime.Now.AddMinutes(30),
                 issuer: _config["JWT:Issuer"],
                 audience: _config["JWT:Audience"],
                 signingCredentials: signingCredentials
