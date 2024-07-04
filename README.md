@@ -36,7 +36,7 @@
 </div>
 
 <div align="center">
-        <a href="https://github.com/galmihaly/AudioShopInventoryManagementAPI/blob/master/ReadmeImages/database.png"><img src="ReadmeImages/database.png" alt="AudioShop"></a>
+        <a href="https://github.com/galmihaly/AudioShopInventoryManagementRestAPI/blob/master/ReadmeImages/database.png"><img src="ReadmeImages/database.png" alt="AudioShop"></a>
         <p>Az adatbázis táblái és az azok közti kapcsolatok</p>
 </div>
 
