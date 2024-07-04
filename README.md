@@ -32,6 +32,7 @@
 ---
 
 <div align="center">
+    <br>
     <h3>Az adatbázis felépítése</h3>
 </div>
 
@@ -41,3 +42,15 @@
 </div>
 
 ---
+
+<div align="center">
+    <br>
+    <h3>A termék azonosítója</h3>
+</div>
+
+- Framework: .NET 8. Verzió
+
+<div align="center">
+        <img src="ReadmeImages/product_id.png" alt="AudioShop"></a>
+        <p>A termék azonosítójának részei</p>
+</div>
