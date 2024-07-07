@@ -69,3 +69,4 @@
         <img src="ReadmeImages/product_id.png" alt="AudioShop"></a>
         <p>A termék azonosítójának részei</p>
 </div>
+
